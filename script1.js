@@ -1,3 +1,5 @@
+//daniela 
+
 //this height and width is the height and width of the whole section where our graph representations should go 
 var margin1 = {t: 10, r: 20, b: 20, l: 5}; //this is an object
 var width1 = d3.select('#graphDataRepresentations-d').node().clientWidth - margin1.r - margin1.l;
@@ -67,13 +69,13 @@ function calculateBirthsPerState(data) {
 //data is projectedBirthsPerState data set
 function drawProjectedBirthsPerState(data){
     
-var lowColor = '#987da8'
-var highColor = '#11314a'
+var lowColor = '#5b03b2'
+var highColor = '#ea0000'
 
 // D3 Projection
 var projection = d3.geoAlbersUsa()
-  .translate([width2 / 2+130, height2/2 + 270]) // translate to center of screen
-  .scale([1200]); // scale things down so see entire US
+  .translate([width2 / 2+100, height2/2 + 370]) // translate to center of screen
+  .scale([1500]); // scale things down so see entire US
 
 // Define path generator
 var path = d3.geoPath() // path generator that will convert GeoJSON to SVG paths
@@ -82,8 +84,10 @@ var path = d3.geoPath() // path generator that will convert GeoJSON to SVG paths
 //Create SVG element and append map to the SVG
 var svg = d3.select("#birthMap")
   .append("svg")
-  .attr("width", 1200)
-  .attr("height", 736);
+  .attr("width", 1400)
+  .attr("height", 700)
+  .attr("transform", "translate(0,20)");
+    
 
 var extentProjectedBirths = d3.extent(data, function(d) {
         return d.projectedBirths;
@@ -95,8 +99,12 @@ var maxVal = extentProjectedBirths[1];
 var ramp = d3.scaleLinear().domain([minVal,maxVal]).range([lowColor,highColor])
 //    console.log("min value: " + minVal + " max value: " + maxVal );
 
-  d3.json("data/us-states.json", function(json) {
 
+
+
+  d3.json("data/us-states.json", function(json) {
+    
+      
     // Loop through each state data value in the .csv file
     for (var i = 0; i < data.length; i++) {
 
@@ -121,31 +129,69 @@ var ramp = d3.scaleLinear().domain([minVal,maxVal]).range([lowColor,highColor])
       }
     }
 
+      
+      /*
+function draw(){
+
+  d3.json("readme.json", function(json) {
+    g.selectAll("path")
+    .data(json.features)
+    .enter()
+    .append("path")
+    .attr("d", path)
+    .append("svg:text")
+    .text(function(d){
+        return d.properties.name;
+    })
+    .attr("x", function(d){
+        return -path.centroid(d)[0];
+    })
+    .attr("y", function(d){
+        return  -path.centroid(d)[1];
+    });
+
+  });
+}
+*/
+      
+      
     // Bind the data to the SVG and create one path per GeoJSON feature
     svg.selectAll("path")
       .data(json.features)
       .enter()
       .append("path")
       .attr("d", path)
-      .style("stroke", "#070606")
+      .style("stroke", "#000000")
       .style("stroke-width", "0.5")
-      .style("fill", function(d) { return ramp(d.properties.value) });
+      .style("fill", function(d) { return ramp(d.properties.value) })
+      .append("svg:text")
+      .text(function(d){
+        return d.properties.name;
+        })
+      .attr("x", function(d){
+        return path.centroid(d)[0];
+        })
+      .attr("y", function(d){
+        return  path.centroid(d)[1];
+        })
+      .attr("text-anchor","middle")
+      .attr('font-size','6pt');
     
 		// add a legend
-		var w = 125, h = 300;
+		var w = 1050, h = 40;
 
 		var key = d3.select("#birthKey")
 			.append("svg")
 			.attr("width", w)
-			.attr("height", h)
+			.attr("height", h+25)
 			.attr("class", "legend");
 
 		var legend = key.append("defs")
 			.append("svg:linearGradient")
 			.attr("id", "gradient")
 			.attr("x1", "100%")
-			.attr("y1", "0%")
-			.attr("x2", "100%")
+			.attr("y1", "100%")
+			.attr("x2", "0%")
 			.attr("y2", "100%")
 			.attr("spreadMethod", "pad");
 
@@ -160,20 +206,22 @@ var ramp = d3.scaleLinear().domain([minVal,maxVal]).range([lowColor,highColor])
 			.attr("stop-opacity", 1);
 
 		key.append("rect")
-			.attr("width", w - 100)
+			.attr("width", w)
 			.attr("height", h)
 			.style("fill", "url(#gradient)")
-			.attr("transform", "translate(-10,10)");
+			.attr("transform", "translate(10,0)");
 
 		var y = d3.scaleLinear()
-			.range([h, 0])
+			.range([0,w])
 			.domain([minVal, maxVal]);
 
-		var yAxis = d3.axisRight(y);
+		var yAxis = d3.axisBottom(y).tickSize(45) ;
 
 		key.append("g")
 			.attr("class", "y axis")
-			.attr("transform", "translate(21,10)")
+			.attr("transform", "translate(10,0)")
+            .attr("color", "black")
+            .attr("gridLineColor", "#ffffff")
 			.call(yAxis)
   });
 }
