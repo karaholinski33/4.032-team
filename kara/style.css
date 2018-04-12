@@ -13,22 +13,44 @@ path {
 	stroke-width: 1;
 	shape-rendering: crispEdges;
 }
+.bar:hover {
+  fill: orangered ;
+}
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
 
-.tooltip {
-	background: #eee;
-	box-shadow: 0 0 5px #999999;
-	color: #333;
-	font-size: 12px;
-	left: 130px;
-	padding: 10px;
-	position: absolute;
-	text-align: center;
-	top: 95px;
-	z-index: 10;
-	display: block;
-	opacity: 0;
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: relative;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
 }
 
 .title{
 font-size:16px;
+}
+
+.text {
+  fill: black;
+  font: 20px sans-serif;
+  text-anchor: middle;
 }

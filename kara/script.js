@@ -1,11 +1,9 @@
 //this height and width is the height and width of the whole section where our graph representations should go 
-var margin1 = {t: 10, r:0, b: 20, l: 80}; //this is an object
+var margin1 = {t: 10, r:0, b: 40, l: 80}; //this is an object
 var width1 = d3.select('#graphDataRepresentations').node().clientWidth - margin1.r - margin1.l,
     //height1 = (d3.select('#graphDataRepresentations').node().clientHeight ) - margin1.t - margin1.b;
     height1 = 500;
 
-console.log(width1);
-console.log(height1)
 
 var birthPerStatePlot = d3.select('#graphDataRepresentations');
 
@@ -16,7 +14,7 @@ var birthPerStatePlot = d3.select('#graphDataRepresentations');
 //    .attr('width', width1 + margin1.r + margin1.l)
 //    .attr('height', height1 + margin1.t + margin1.b);
 
-var margin2 = {t: 0, r: 40, b: 20, l: 40}; 
+var margin2 = {t: 0, r: 40, b: 10, l: 10}; 
 var width2 = d3.select('#birthPerState').node().clientWidth - margin2.r - margin2.l,
     height2 = (d3.select('#birthPerState').node().clientHeight) - margin2.t - margin2.b;
 
@@ -40,13 +38,67 @@ d3.csv("/data/Population/Projected Births 2016 to 2060.csv", function(dataset) {
     */
 
 
+function round(number, precision) {
+  var shift = function (number, precision, reverseShift) {
+    if (reverseShift) {
+      precision = -precision;
+    }  
+    numArray = ("" + number).split("e");
+    return +(numArray[0] + "e" + (numArray[1] ? (+numArray[1] + precision) : precision));
+  };
+  return shift(Math.round(shift(number, precision, false)), precision, true);
+}
 
-d3.csv("/data/Population/Projected Births 2016 to 2060.csv", function(error, csv_data) {
+d3.csv("data/Population/Projected Births 2016 to 2060.csv", function(error, csv_data) {
  var data = d3.nest()
   .key(function(d) { return +d.YEAR + 5;})
   .rollup(function(d) { 
-   return d3.sum(d, function(g) {return g.BIRTHS; });
-  }).entries(csv_data);
+    var bar_total = d.filter(function(e){return e.RACE_HIS === "0" && e.SEX === "0"});
+    var first_total = d.filter(function(e){return e.RACE_HIS === '1' && e.SEX === "0"})
+    var second_total = d.filter(function(e){return e.RACE_HIS === '2' && e.SEX === "0"})
+    var third_total = d.filter(function(e){return e.RACE_HIS === '3' && e.SEX === "0"})
+    var fourth_total = d.filter(function(e){return e.RACE_HIS === '4' && e.SEX === "0"})
+    var total;
+    var first;
+    var second;
+    var third;
+    var fourth;
+    if (bar_total.length === 0){
+        total = 0
+    }else{
+        total = +bar_total[0].BIRTHS
+    }
+    if (first_total.length === 0){
+        first = 0
+    }else{
+        first = +first_total[0].BIRTHS
+    }
+    if (second_total.length === 0){
+        second = 0
+    }else{
+        second = +second_total[0].BIRTHS
+    }
+    if (third_total.length === 0){
+        third = 0
+    }else{
+        third = +third_total[0].BIRTHS
+    }
+    if (fourth_total.length === 0){
+        fourth = 0
+    }else{
+        fourth = +fourth_total[0].BIRTHS
+    }
+    console.log(bar_total);
+      
+    return {
+       total : total,
+       first : first,
+       second : second,
+       third : third,
+       fourth : fourth
+  }})
+      .entries(csv_data);
+      
     data = data.slice(0,15)
     console.log(data);
     // set the ranges
@@ -65,36 +117,44 @@ d3.csv("/data/Population/Projected Births 2016 to 2060.csv", function(error, csv
     .append("g")
     .attr("transform", 
           "translate(" + margin1.l + "," + margin1.t + ")");
-    console.log(height1)
-    console.log(width1)
-    console.log(margin1.l)
-
-    
-
-
-
+  // add the x Axis
+  svg.append("g")
+      .style("font", "25px times")
+      .attr("transform", "translate(0," + height1 + ")")
+      .call(d3.axisBottom(x));
   // Scale the range of the data in the domains
-    x.domain(data.map(function(d) { return Object.values(d)[0]; }));
-    y.domain([28300000, d3.max(data, function(d) { return Object.values(d)[1]; })]);
-
+    x.domain(data.map(function(d) { return d.key; }));
+    y.domain([4000000, d3.max(data, function(d) { return d.value.total; })]);
+  var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+      var white_percent = round(100*d.value.first/d.value.total,3)+"% White"
+      var black_percent = round(100*d.value.second/d.value.total,3)+"% Black"
+      var native_percent = round(100*d.value.third/d.value.total,3)+"% Native"
+      var asian_percent = round(100*d.value.fourth/d.value.total,3)+"% Asian"
+    return "<span style='color:red'>" + white_percent+ " | " + black_percent +" | " + asian_percent+ " | "+ native_percent+ " | "+"</span>";
+  })
   // append the rectangles for the bar chart
-    console.log(data)
-    console.log('hi')
   svg.selectAll(".bar")
       .data(data)
       .enter().append("rect")
       .attr("class", "bar")
-      .attr("x", function(d) { return x(Object.values(d)[0]); })
+      .attr("x", function(d) { return x(d.key); })
       .attr("width", x.bandwidth())
-      .attr("y", function(d) { return y(Object.values(d)[1]); })
-      .attr("height", function(d) { return height1 - y(Object.values(d)[1]); });
-
-  // add the x Axis
-  svg.append("g")
-      .attr("transform", "translate(0," + height1 + ")")
-      .call(d3.axisBottom(x));
-
+      .attr("y", function(d) { return y(d.value.total); })
+      .attr("height", function(d) { return height1 - y(d.value.total); })
+      .attr('fill','#4B0082')
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
+    svg.call(tip);
+  //var f = d3.format(".1f");
   // add the y Axis
   svg.append("g")
-      .call(d3.axisLeft(y));
+      .style('font',"20px times")
+      .call(d3.axisLeft(y)
+        .ticks(7)
+        .tickFormat(d3.formatPrefix(".2f", 1e6)));;
      });
+
+    
