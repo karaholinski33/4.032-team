@@ -1,7 +1,7 @@
 
 /*DANIELA CSS*/
 .y-axis{
-    stroke: #000000;
+    color: #000000;
 }
 
 
@@ -12,7 +12,7 @@ body {
 .viz-container {
     width: 1240px;
     min-height: 736px;
-    border: 1px solid;
+    border: 1px none;
     float: left;
     margin-left: auto;
     margin-right: auto;
@@ -89,7 +89,7 @@ path {
 
 .axis path, .axis line {
 	fill: none;
-	stroke: #52089d;
+	stroke: #ffffff;
     color: #52089d;
 	stroke-width: 1;
 	shape-rendering: auto;}
@@ -109,6 +109,10 @@ path {
 	opacity: 5;}
 
 .title{
-font-size:55px;
+    font-size:55px;
+}
+
+.names{
+    font-size:35px;
 }
 

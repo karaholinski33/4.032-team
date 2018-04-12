@@ -51,13 +51,13 @@ function calculatePercentageOfPopulationByState(data) {
 //I am only using one data point for this so im not going to bother loading the data in 
 //data is the populationPercentageByState
 function calculateBirthsPerState(data) {
-    var projectedBirths2019 = 40944965; 
+    var projectedBirths2022 = 4137477; 
     
     var projectedBirthsPerState = [];
     data.forEach(function(d) {
         var tempDict = {
             state: d.state,
-            projectedBirths: Math.ceil(d.percentage * projectedBirths2019)
+            projectedBirths: Math.ceil(d.percentage * projectedBirths2022)
         };
         projectedBirthsPerState.push(tempDict);
     });
@@ -84,7 +84,7 @@ var path = d3.geoPath() // path generator that will convert GeoJSON to SVG paths
 //Create SVG element and append map to the SVG
 var svg = d3.select("#birthMap")
   .append("svg")
-  .attr("width", 1400)
+  .attr("width", 1300)
   .attr("height", 700)
   .attr("transform", "translate(0,20)");
     
@@ -161,21 +161,77 @@ function draw(){
       .enter()
       .append("path")
       .attr("d", path)
-      .style("stroke", "#000000")
-      .style("stroke-width", "0.5")
-      .style("fill", function(d) { return ramp(d.properties.value) })
-      .append("svg:text")
-      .text(function(d){
-        return d.properties.name;
+      .style("stroke", "#ffffff")
+      .style("stroke-width", "1.0")
+      .style("fill", function(d) { return ramp(d.properties.value) 
+       });
+      
+      
+      var color = "white";
+      svg.selectAll("text")
+        .data(json.features)
+        .enter()
+        .append("svg:text")
+        .text(function(d){
+            color = "white";
+            var abbr = convert_state(d.properties.name, "abbrev");
+            if(abbr == false) { abbr = " "};
+            console.log(abbr);
+            return abbr
         })
-      .attr("x", function(d){
-        return path.centroid(d)[0];
+        .attr("x", function(d){
+            return path.centroid(d)[0];
         })
-      .attr("y", function(d){
-        return  path.centroid(d)[1];
+        .attr("y", function(d){
+            return  path.centroid(d)[1];
         })
-      .attr("text-anchor","middle")
-      .attr('font-size','6pt');
+        .attr("text-anchor","middle")
+        .attr('font-size','10pt')
+        .attr("fill", color );
+      
+      
+      function convert_state(name, to) {
+        var name = name.toUpperCase();
+        var states = new Array(                         {'name':'Alabama', 'abbrev':'AL'},          {'name':'Alaska', 'abbrev':'AK'},
+            {'name':'Arizona', 'abbrev':'AZ'},          {'name':'Arkansas', 'abbrev':'AR'},         {'name':'California', 'abbrev':'CA'},
+            {'name':'Colorado', 'abbrev':'CO'},         {'name':'Connecticut', 'abbrev':'CT'},      {'name':'Delaware', 'abbrev':'DE'},
+            {'name':'Florida', 'abbrev':'FL'},          {'name':'Georgia', 'abbrev':'GA'},          {'name':'Hawaii', 'abbrev':'HI'},
+            {'name':'Idaho', 'abbrev':'ID'},            {'name':'Illinois', 'abbrev':'IL'},         {'name':'Indiana', 'abbrev':'IN'},
+            {'name':'Iowa', 'abbrev':'IA'},             {'name':'Kansas', 'abbrev':'KS'},           {'name':'Kentucky', 'abbrev':'KY'},
+            {'name':'Louisiana', 'abbrev':'LA'},        {'name':'Maine', 'abbrev':'ME'},            {'name':'Maryland', 'abbrev':'MD'},
+            {'name':'Massachusetts', 'abbrev':'MA'},    {'name':'Michigan', 'abbrev':'MI'},         {'name':'Minnesota', 'abbrev':'MN'},
+            {'name':'Mississippi', 'abbrev':'MS'},      {'name':'Missouri', 'abbrev':'MO'},         {'name':'Montana', 'abbrev':'MT'},
+            {'name':'Nebraska', 'abbrev':'NE'},         {'name':'Nevada', 'abbrev':'NV'},           {'name':'New Hampshire', 'abbrev':'NH'},
+            {'name':'New Jersey', 'abbrev':'NJ'},       {'name':'New Mexico', 'abbrev':'NM'},       {'name':'New York', 'abbrev':'NY'},
+            {'name':'North Carolina', 'abbrev':'NC'},   {'name':'North Dakota', 'abbrev':'ND'},     {'name':'Ohio', 'abbrev':'OH'},
+            {'name':'Oklahoma', 'abbrev':'OK'},         {'name':'Oregon', 'abbrev':'OR'},           {'name':'Pennsylvania', 'abbrev':'PA'},
+            {'name':'Rhode Island', 'abbrev':'RI'},     {'name':'South Carolina', 'abbrev':'SC'},   {'name':'South Dakota', 'abbrev':'SD'},
+            {'name':'Tennessee', 'abbrev':'TN'},        {'name':'Texas', 'abbrev':'TX'},            {'name':'Utah', 'abbrev':'UT'},
+            {'name':'Vermont', 'abbrev':'VT'},          {'name':'Virginia', 'abbrev':'VA'},         {'name':'Washington', 'abbrev':'WA'},
+            {'name':'West Virginia', 'abbrev':'WV'},    {'name':'Wisconsin', 'abbrev':'WI'},        {'name':'Wyoming', 'abbrev':'WY'}, 
+            );
+        var returnthis = false;
+        $.each(states, function(index, value){
+            if (to == 'name') {
+                if (value.abbrev == name){
+                    returnthis = value.name;
+                    return false;
+                }
+            } else if (to == 'abbrev') {
+                if (value.name.toUpperCase() == name){
+                    returnthis = value.abbrev;
+                    return false;
+                }
+            }
+        });
+        return returnthis;
+      }
+      
+      
+      
+      
+      
+
     
 		// add a legend
 		var w = 1050, h = 40;
@@ -215,13 +271,11 @@ function draw(){
 			.range([0,w])
 			.domain([minVal, maxVal]);
 
-		var yAxis = d3.axisBottom(y).tickSize(45) ;
+		var yAxis = d3.axisBottom(y).tickSize(45);
 
 		key.append("g")
 			.attr("class", "y axis")
 			.attr("transform", "translate(10,0)")
-            .attr("color", "black")
-            .attr("gridLineColor", "#ffffff")
 			.call(yAxis)
   });
 }
