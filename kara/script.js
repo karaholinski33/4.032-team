@@ -3,7 +3,7 @@ var margin1 = {t: 10, r:0, b: 40, l: 80}; //this is an object
 var width1 = d3.select('#graphDataRepresentations').node().clientWidth - margin1.r - margin1.l,
     //height1 = (d3.select('#graphDataRepresentations').node().clientHeight ) - margin1.t - margin1.b;
     height1 = 500;
-
+//comment here
 
 var birthPerStatePlot = d3.select('#graphDataRepresentations');
 
