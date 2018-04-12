@@ -51,7 +51,7 @@ function calculatePercentageOfPopulationByState(data) {
 //I am only using one data point for this so im not going to bother loading the data in 
 //data is the populationPercentageByState
 function calculateBirthsPerState(data) {
-    var projectedBirths2022 = 4137477; 
+    var projectedBirths2022 = 4137447; 
     
     var projectedBirthsPerState = [];
     data.forEach(function(d) {
@@ -97,7 +97,7 @@ var maxVal = extentProjectedBirths[1];
 
 //	var maxVal = d3.max(data.projectedBirths)
 var ramp = d3.scaleLinear().domain([minVal,maxVal]).range([lowColor,highColor])
-//    console.log("min value: " + minVal + " max value: " + maxVal );
+    console.log("min value: " + minVal + " max value: " + maxVal );
 
 
 
@@ -128,31 +128,6 @@ var ramp = d3.scaleLinear().domain([minVal,maxVal]).range([lowColor,highColor])
         }
       }
     }
-
-      
-      /*
-function draw(){
-
-  d3.json("readme.json", function(json) {
-    g.selectAll("path")
-    .data(json.features)
-    .enter()
-    .append("path")
-    .attr("d", path)
-    .append("svg:text")
-    .text(function(d){
-        return d.properties.name;
-    })
-    .attr("x", function(d){
-        return -path.centroid(d)[0];
-    })
-    .attr("y", function(d){
-        return  -path.centroid(d)[1];
-    });
-
-  });
-}
-*/
       
       
     // Bind the data to the SVG and create one path per GeoJSON feature
@@ -176,7 +151,6 @@ function draw(){
             color = "white";
             var abbr = convert_state(d.properties.name, "abbrev");
             if(abbr == false) { abbr = " "};
-            console.log(abbr);
             return abbr
         })
         .attr("x", function(d){
@@ -227,11 +201,6 @@ function draw(){
         return returnthis;
       }
       
-      
-      
-      
-      
-
     
 		// add a legend
 		var w = 1050, h = 40;
